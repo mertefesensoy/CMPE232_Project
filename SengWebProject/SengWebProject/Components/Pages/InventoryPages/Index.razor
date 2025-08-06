@@ -1,0 +1,40 @@
+﻿@page "/inventories"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using DataAcess2
+@using SengWebProject.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<SengWebProject.Data.SengWebProjectContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="inventories/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Inventories">
+    <PropertyColumn Property="inventory => inventory.ProductID" />
+    <PropertyColumn Property="inventory => inventory.EmployeeID" />
+    <PropertyColumn Property="inventory => inventory.QuantityAvailable" />
+    <PropertyColumn Property="inventory => inventory.WarehouseLocation" />
+    <PropertyColumn Property="inventory => inventory.LastModified" />
+
+    <TemplateColumn Context="inventory">
+        <a href="@($"inventories/edit?inventoryid={inventory.InventoryID}")">Edit</a> |
+        <a href="@($"inventories/details?inventoryid={inventory.InventoryID}")">Details</a> |
+        <a href="@($"inventories/delete?inventoryid={inventory.InventoryID}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private SengWebProjectContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

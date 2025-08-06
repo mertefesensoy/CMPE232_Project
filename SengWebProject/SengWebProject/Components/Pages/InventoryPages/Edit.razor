@@ -1,0 +1,109 @@
+﻿@page "/inventories/edit"
+@using Microsoft.EntityFrameworkCore
+@using DataAcess2
+@inject IDbContextFactory<SengWebProject.Data.SengWebProjectContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Inventory</h2>
+<hr />
+@if (Inventory is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Inventory" OnValidSubmit="UpdateInventory" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Inventory.InventoryID" value="@Inventory.InventoryID" />
+                <div class="mb-3">
+                    <label for="productid" class="form-label">ProductID:</label>
+                    <InputNumber id="productid" @bind-Value="Inventory.ProductID" class="form-control" />
+                    <ValidationMessage For="() => Inventory.ProductID" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="employeeid" class="form-label">EmployeeID:</label>
+                    <InputNumber id="employeeid" @bind-Value="Inventory.EmployeeID" class="form-control" />
+                    <ValidationMessage For="() => Inventory.EmployeeID" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="quantityavailable" class="form-label">QuantityAvailable:</label>
+                    <InputNumber id="quantityavailable" @bind-Value="Inventory.QuantityAvailable" class="form-control" />
+                    <ValidationMessage For="() => Inventory.QuantityAvailable" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="warehouselocation" class="form-label">WarehouseLocation:</label>
+                    <InputText id="warehouselocation" @bind-Value="Inventory.WarehouseLocation" class="form-control" />
+                    <ValidationMessage For="() => Inventory.WarehouseLocation" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="lastmodified" class="form-label">LastModified:</label>
+                    <InputDate id="lastmodified" @bind-Value="Inventory.LastModified" class="form-control" />
+                    <ValidationMessage For="() => Inventory.LastModified" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/inventories">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int InventoryID { get; set; }
+
+    [SupplyParameterFromForm]
+    private Inventory? Inventory { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Inventory ??= await context.Inventories.FirstOrDefaultAsync(m => m.InventoryID == InventoryID);
+
+        if (Inventory is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateInventory()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Inventory!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!InventoryExists(Inventory!.InventoryID))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/inventories");
+    }
+
+    private bool InventoryExists(int inventoryid)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Inventories.Any(e => e.InventoryID == inventoryid);
+    }
+}

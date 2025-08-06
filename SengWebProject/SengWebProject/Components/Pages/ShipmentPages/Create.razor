@@ -1,0 +1,64 @@
+﻿@page "/shipments/create"
+@using Microsoft.EntityFrameworkCore
+@using DataAcess2
+@inject IDbContextFactory<SengWebProject.Data.SengWebProjectContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Shipment</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Shipment" OnValidSubmit="AddShipment" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="orderid" class="form-label">OrderID:</label> 
+                <InputNumber id="orderid" @bind-Value="Shipment.OrderID" class="form-control" /> 
+                <ValidationMessage For="() => Shipment.OrderID" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="employeeid" class="form-label">EmployeeID:</label> 
+                <InputNumber id="employeeid" @bind-Value="Shipment.EmployeeID" class="form-control" /> 
+                <ValidationMessage For="() => Shipment.EmployeeID" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="shipmentdate" class="form-label">ShipmentDate:</label> 
+                <InputDate id="shipmentdate" @bind-Value="Shipment.ShipmentDate" class="form-control" /> 
+                <ValidationMessage For="() => Shipment.ShipmentDate" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="estimateddeliverydate" class="form-label">EstimatedDeliveryDate:</label> 
+                <InputDate id="estimateddeliverydate" @bind-Value="Shipment.EstimatedDeliveryDate" class="form-control" /> 
+                <ValidationMessage For="() => Shipment.EstimatedDeliveryDate" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="lastmodified" class="form-label">LastModified:</label> 
+                <InputDate id="lastmodified" @bind-Value="Shipment.LastModified" class="form-control" /> 
+                <ValidationMessage For="() => Shipment.LastModified" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/shipments">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Shipment Shipment { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddShipment()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Shipments.Add(Shipment);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/shipments");
+    }
+}

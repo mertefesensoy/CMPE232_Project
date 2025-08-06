@@ -1,0 +1,64 @@
+﻿@page "/inventories/create"
+@using Microsoft.EntityFrameworkCore
+@using DataAcess2
+@inject IDbContextFactory<SengWebProject.Data.SengWebProjectContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Inventory</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Inventory" OnValidSubmit="AddInventory" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="productid" class="form-label">ProductID:</label> 
+                <InputNumber id="productid" @bind-Value="Inventory.ProductID" class="form-control" /> 
+                <ValidationMessage For="() => Inventory.ProductID" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="employeeid" class="form-label">EmployeeID:</label> 
+                <InputNumber id="employeeid" @bind-Value="Inventory.EmployeeID" class="form-control" /> 
+                <ValidationMessage For="() => Inventory.EmployeeID" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="quantityavailable" class="form-label">QuantityAvailable:</label> 
+                <InputNumber id="quantityavailable" @bind-Value="Inventory.QuantityAvailable" class="form-control" /> 
+                <ValidationMessage For="() => Inventory.QuantityAvailable" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="warehouselocation" class="form-label">WarehouseLocation:</label> 
+                <InputText id="warehouselocation" @bind-Value="Inventory.WarehouseLocation" class="form-control" /> 
+                <ValidationMessage For="() => Inventory.WarehouseLocation" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="lastmodified" class="form-label">LastModified:</label> 
+                <InputDate id="lastmodified" @bind-Value="Inventory.LastModified" class="form-control" /> 
+                <ValidationMessage For="() => Inventory.LastModified" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/inventories">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Inventory Inventory { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddInventory()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Inventories.Add(Inventory);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/inventories");
+    }
+}

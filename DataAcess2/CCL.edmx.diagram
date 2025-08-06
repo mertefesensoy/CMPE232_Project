@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="8f042f58ed064bb2ba3e42b260406824" Name="Diagram1" ZoomLevel="40">
+        <EntityTypeShape EntityType="CCLModel.C__EFMigrationsHistory" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CCLModel.Customer" Width="1.5" PointX="1.5" PointY="17.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CCLModel.Employee" Width="1.5" PointX="0.75" PointY="10.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CCLModel.Inventory" Width="1.5" PointX="3" PointY="6.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CCLModel.OrderDetail" Width="1.5" PointX="6" PointY="6.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CCLModel.Order" Width="1.5" PointX="3.75" PointY="16.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CCLModel.Product" Width="1.5" PointX="0.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CCLModel.PromotionalOffer" Width="1.5" PointX="3" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CCLModel.Shipment" Width="1.5" PointX="6" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CCLModel.SupplierProduct" Width="1.5" PointX="3" PointY="2.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CCLModel.Supplier" Width="1.5" PointX="0.75" PointY="2.25" IsExpanded="true" />
+        <AssociationConnector Association="CCLModel.FK__Orders__Customer__73DA2C14" ManuallyRouted="false" />
+        <AssociationConnector Association="CCLModel.FK__Inventory__Emplo__62AFA012" ManuallyRouted="false" />
+        <AssociationConnector Association="CCLModel.FK__Orders__Employee__74CE504D" ManuallyRouted="false" />
+        <AssociationConnector Association="CCLModel.FK__Shipments__Emplo__01342732" ManuallyRouted="false" />
+        <AssociationConnector Association="CCLModel.FK__Inventory__Produ__61BB7BD9" ManuallyRouted="false" />
+        <AssociationConnector Association="CCLModel.FK__OrderDeta__Order__7A8729A3" ManuallyRouted="false" />
+        <AssociationConnector Association="CCLModel.FK__OrderDeta__Produ__7B7B4DDC" ManuallyRouted="false" />
+        <AssociationConnector Association="CCLModel.FK__Shipments__Order__004002F9" ManuallyRouted="false" />
+        <AssociationConnector Association="CCLModel.FK__Promotion__Produ__6F1576F7" ManuallyRouted="false" />
+        <AssociationConnector Association="CCLModel.FK__SupplierP__Produ__6A50C1DA" ManuallyRouted="false" />
+        <AssociationConnector Association="CCLModel.FK__SupplierP__Suppl__695C9DA1" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

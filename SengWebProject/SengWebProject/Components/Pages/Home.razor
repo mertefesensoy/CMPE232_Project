@@ -1,0 +1,154 @@
+﻿@page "/"
+@using Microsoft.EntityFrameworkCore
+@using Radzen
+@using Radzen.Blazor
+@using System.Net.Http
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop
+@using Radzen
+@using Radzen.Blazor
+@inject IDbContextFactory<SengWebProject.Data.SengWebProjectContext> DbFactory
+
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+
+<div class="row g-3">
+    <!-- Inventory Overview Chart -->
+    <div class="col-md-6">
+        <div class="border border-2 p-1">
+            <h3>Inventory Overview</h3>
+            <RadzenChart ColorScheme="ColorScheme.Monochrome">
+                <RadzenColumnSeries Fill="forestgreen" Title="Inventory" Data="@inventoryData" CategoryProperty="Label" ValueProperty="Value">
+                    <RadzenSeriesDataLabels Visible="true" />
+                </RadzenColumnSeries>
+                <RadzenValueAxis>
+                    <RadzenAxisTitle Text="Quantity Available" />
+                </RadzenValueAxis>
+                <RadzenCategoryAxis>
+                    <RadzenAxisTitle Text="Product Name" />
+                </RadzenCategoryAxis>
+                <RadzenLegend Visible="false" />
+            </RadzenChart>
+        </div>
+    </div>
+
+    <!-- Products Chart -->
+    <div class="col-md-6">
+        <div class="border border-2 p-1">
+            <h3>Product Prices</h3>
+            <RadzenChart ColorScheme="ColorScheme.Pastel">
+                <RadzenColumnSeries Fill="CornflowerBlue" Title="Products" Data="@productData" CategoryProperty="Label" ValueProperty="Value">
+                    <RadzenSeriesDataLabels Visible="true" />
+                </RadzenColumnSeries>
+                <RadzenValueAxis>
+                    <RadzenAxisTitle Text="Price" />
+                </RadzenValueAxis>
+                <RadzenCategoryAxis>
+                    <RadzenAxisTitle Text="Product Name" />
+                </RadzenCategoryAxis>
+                <RadzenLegend Visible="false" />
+            </RadzenChart>
+        </div>
+    </div>
+
+    <!-- Orders Chart -->
+    <div class="col-md-6">
+        <div class="border border-2 p-1">
+            <h3>Order Totals</h3>
+            <RadzenChart ColorScheme="ColorScheme.Monochrome">
+                <RadzenColumnSeries Fill="goldenrod" Title="Orders" Data="@orderData" CategoryProperty="Label" ValueProperty="Value">
+                    <RadzenSeriesDataLabels Visible="true" />
+                </RadzenColumnSeries>
+                <RadzenValueAxis>
+                    <RadzenAxisTitle Text="Total Amount" />
+                </RadzenValueAxis>
+                <RadzenCategoryAxis>
+                    <RadzenAxisTitle Text="Customer Name" />
+                </RadzenCategoryAxis>
+                <RadzenLegend Visible="false" />
+            </RadzenChart>
+        </div>
+    </div>
+
+    <!-- Customers Chart -->
+    <div class="col-md-6">
+        <div class="border border-2 p-1">
+            <h3>Customer Loyalty</h3>
+            <RadzenChart ColorScheme="ColorScheme.Palette">
+                <RadzenPieSeries Title="Customers" Data="@customerData" CategoryProperty="Label" ValueProperty="Value">
+                    <RadzenSeriesDataLabels Visible="true" />
+                </RadzenPieSeries>
+            </RadzenChart>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<ChartData> inventoryData = new List<ChartData>();
+    private List<ChartData> productData = new List<ChartData>();
+    private List<ChartData> orderData = new List<ChartData>();
+    private List<ChartData> customerData = new List<ChartData>();
+
+    public class ChartData
+    {
+        public string Label { get; set; } = default!;
+        public float Value { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadChartData();
+    }
+
+    private async Task LoadChartData()
+    {
+        try
+        {
+            using var context = await DbFactory.CreateDbContextAsync();
+
+            // Inventory Chart: Quantity Available by Product
+            inventoryData = await context.Inventories
+                .Include(i => i.Product)
+                .GroupBy(i => i.Product.Name)
+                .Select(g => new ChartData
+                    {
+                        Label = g.Key,
+                        Value = g.Sum(i => i.QuantityAvailable)
+                    })
+                .ToListAsync();
+
+            // Product Chart: Prices of Products
+            productData = await context.Products
+                .Select(p => new ChartData
+                    {
+                        Label = p.Name,
+                        Value = (float)p.Price
+                    })
+                .ToListAsync();
+
+            // Orders Chart: Total Amount by Customer
+            orderData = await context.Orders
+                .Include(o => o.Customer)
+                .GroupBy(o => o.Customer.Name)
+                .Select(g => new ChartData
+                    {
+                        Label = g.Key,
+                        Value = g.Sum(o => (float)o.TotalAmount)
+                    })
+                .ToListAsync();
+
+            // Initialize customer data to prevent null reference
+            customerData = new List<ChartData>();
+        }
+        catch (Exception ex)
+        {
+            // Handle or log the error appropriately
+            Console.WriteLine($"Error loading chart data: {ex.Message}");
+        }
+    }
+}

@@ -1,0 +1,109 @@
+﻿@page "/shipments/edit"
+@using Microsoft.EntityFrameworkCore
+@using DataAcess2
+@inject IDbContextFactory<SengWebProject.Data.SengWebProjectContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Shipment</h2>
+<hr />
+@if (Shipment is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Shipment" OnValidSubmit="UpdateShipment" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Shipment.ShipmentID" value="@Shipment.ShipmentID" />
+                <div class="mb-3">
+                    <label for="orderid" class="form-label">OrderID:</label>
+                    <InputNumber id="orderid" @bind-Value="Shipment.OrderID" class="form-control" />
+                    <ValidationMessage For="() => Shipment.OrderID" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="employeeid" class="form-label">EmployeeID:</label>
+                    <InputNumber id="employeeid" @bind-Value="Shipment.EmployeeID" class="form-control" />
+                    <ValidationMessage For="() => Shipment.EmployeeID" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="shipmentdate" class="form-label">ShipmentDate:</label>
+                    <InputDate id="shipmentdate" @bind-Value="Shipment.ShipmentDate" class="form-control" />
+                    <ValidationMessage For="() => Shipment.ShipmentDate" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="estimateddeliverydate" class="form-label">EstimatedDeliveryDate:</label>
+                    <InputDate id="estimateddeliverydate" @bind-Value="Shipment.EstimatedDeliveryDate" class="form-control" />
+                    <ValidationMessage For="() => Shipment.EstimatedDeliveryDate" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="lastmodified" class="form-label">LastModified:</label>
+                    <InputDate id="lastmodified" @bind-Value="Shipment.LastModified" class="form-control" />
+                    <ValidationMessage For="() => Shipment.LastModified" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/shipments">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int ShipmentID { get; set; }
+
+    [SupplyParameterFromForm]
+    private Shipment? Shipment { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Shipment ??= await context.Shipments.FirstOrDefaultAsync(m => m.ShipmentID == ShipmentID);
+
+        if (Shipment is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateShipment()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Shipment!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ShipmentExists(Shipment!.ShipmentID))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/shipments");
+    }
+
+    private bool ShipmentExists(int shipmentid)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Shipments.Any(e => e.ShipmentID == shipmentid);
+    }
+}

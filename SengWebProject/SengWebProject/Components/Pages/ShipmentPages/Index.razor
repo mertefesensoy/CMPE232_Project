@@ -1,0 +1,40 @@
+﻿@page "/shipments"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using DataAcess2
+@using SengWebProject.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<SengWebProject.Data.SengWebProjectContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="shipments/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Shipments">
+    <PropertyColumn Property="shipment => shipment.OrderID" />
+    <PropertyColumn Property="shipment => shipment.EmployeeID" />
+    <PropertyColumn Property="shipment => shipment.ShipmentDate" />
+    <PropertyColumn Property="shipment => shipment.EstimatedDeliveryDate" />
+    <PropertyColumn Property="shipment => shipment.LastModified" />
+
+    <TemplateColumn Context="shipment">
+        <a href="@($"shipments/edit?shipmentid={shipment.ShipmentID}")">Edit</a> |
+        <a href="@($"shipments/details?shipmentid={shipment.ShipmentID}")">Details</a> |
+        <a href="@($"shipments/delete?shipmentid={shipment.ShipmentID}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private SengWebProjectContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

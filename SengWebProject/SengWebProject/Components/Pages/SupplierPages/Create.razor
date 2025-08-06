@@ -1,0 +1,59 @@
+﻿@page "/suppliers/create"
+@using Microsoft.EntityFrameworkCore
+@using DataAcess2
+@inject IDbContextFactory<SengWebProject.Data.SengWebProjectContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Supplier</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Supplier" OnValidSubmit="AddSupplier" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label> 
+                <InputText id="name" @bind-Value="Supplier.Name" class="form-control" /> 
+                <ValidationMessage For="() => Supplier.Name" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="contactinfo" class="form-label">ContactInfo:</label> 
+                <InputText id="contactinfo" @bind-Value="Supplier.ContactInfo" class="form-control" /> 
+                <ValidationMessage For="() => Supplier.ContactInfo" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="address" class="form-label">Address:</label> 
+                <InputText id="address" @bind-Value="Supplier.Address" class="form-control" /> 
+                <ValidationMessage For="() => Supplier.Address" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="lastmodified" class="form-label">LastModified:</label> 
+                <InputDate id="lastmodified" @bind-Value="Supplier.LastModified" class="form-control" /> 
+                <ValidationMessage For="() => Supplier.LastModified" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/suppliers">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Supplier Supplier { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddSupplier()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Suppliers.Add(Supplier);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/suppliers");
+    }
+}

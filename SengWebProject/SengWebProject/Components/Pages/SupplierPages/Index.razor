@@ -1,0 +1,39 @@
+﻿@page "/suppliers"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using DataAcess2
+@using SengWebProject.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<SengWebProject.Data.SengWebProjectContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="suppliers/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Suppliers">
+    <PropertyColumn Property="supplier => supplier.Name" />
+    <PropertyColumn Property="supplier => supplier.ContactInfo" />
+    <PropertyColumn Property="supplier => supplier.Address" />
+    <PropertyColumn Property="supplier => supplier.LastModified" />
+
+    <TemplateColumn Context="supplier">
+        <a href="@($"suppliers/edit?supplierid={supplier.SupplierID}")">Edit</a> |
+        <a href="@($"suppliers/details?supplierid={supplier.SupplierID}")">Details</a> |
+        <a href="@($"suppliers/delete?supplierid={supplier.SupplierID}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private SengWebProjectContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}
